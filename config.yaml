@@ -1,0 +1,47 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Pipeline configuration
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Five topics per the spec.  Change here only — nowhere else in the code.
+topics:
+  - AI coding agents
+  - Startup Culture
+  - Self-driving cars
+  - Four-day work week
+  - Return to office mandates
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Crawler settings
+# ─────────────────────────────────────────────────────────────────────────────
+crawler:
+  hits_per_page: 50        # Algolia max is 1000; 50 is a safe, polite default
+  pages_per_topic: 2       # 2 × 50 = 100 hits per topic → 500 raw
+  max_total_items: 500     # Hard cap across all topics
+  sleep_seconds: 1.0       # Seconds to sleep between paginated requests
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Paths (relative to project root)
+# ─────────────────────────────────────────────────────────────────────────────
+paths:
+  db: data/hn_pipeline.db
+  raw_dir: data/raw
+  outputs_dir: outputs
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Classifier settings
+# ─────────────────────────────────────────────────────────────────────────────
+classifier:
+  # VADER compound score thresholds for sentiment bucketing
+  # Scores range from -1.0 (most negative) to +1.0 (most positive)
+  sentiment_positive_threshold: 0.05   # compound >= this → "positive"
+  sentiment_negative_threshold: -0.05  # compound <= this → "negative"
+                                       # between the two   → "neutral"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Summary / evaluation
+# ─────────────────────────────────────────────────────────────────────────────
+summary:
+  top_items_per_topic: 3   # How many top items to show per topic in the report
+
+evaluation:
+  sample_size: 25          # Number of records to sample for hand-labelling
