@@ -1,6 +1,6 @@
 # HN Pipeline — Intern Assessment
 
-A config-driven, idempotent data pipeline that crawls Hacker News discussions about five developer tools, classifies each item with sentiment and a category, and emits a summary report.
+A config-driven, idempotent data pipeline that crawls Hacker News discussions about five configured topics, classifies each item with sentiment and a category, and emits a summary report.
 
 ---
 
@@ -47,10 +47,11 @@ BEFORE: 500 rows │ AFTER: 500 rows │ DELTA: +0
 ### Other commands
 
 ```bash
-make sample-eval   # Generate outputs/eval_sample.xlsx for hand-labelling
-make evaluate      # Compare hand labels to classifier (after filling the CSV)
-make clean         # Remove database + outputs (keeps raw cache)
-make clean-all     # Remove everything including raw cache
+python -m pipeline --skip-crawl           # re-classify / re-summarise without re-fetching
+make sample-eval                          # Generate outputs/eval_sample.xlsx for hand-labelling
+make evaluate                             # Compare hand labels to classifier (after filling the xlsx)
+make clean                                # Remove database + outputs (keeps raw cache)
+make clean-all                            # Remove everything including raw cache
 ```
 
 ---
@@ -137,17 +138,30 @@ Six categories defined in `classify.py`:
 All tunable knobs are in `config.yaml` — nothing is hardcoded in Python:
 
 ```yaml
-topics: [Notion, Figma, Linear, Supabase, Vercel]
+topics:
+  - AI coding agents
+  - Startup Culture
+  - Self-driving cars
+  - Four-day work week
+  - Return to office mandates
 
 crawler:
   hits_per_page: 50
-  pages_per_topic: 3
+  pages_per_topic: 2
   max_total_items: 500
   sleep_seconds: 1.0
+
+paths:
+  db: data/hn_pipeline.db
+  raw_dir: data/raw
+  outputs_dir: outputs
 
 classifier:
   sentiment_positive_threshold: 0.05
   sentiment_negative_threshold: -0.05
+
+summary:
+  top_items_per_topic: 3
 
 evaluation:
   sample_size: 25
@@ -183,3 +197,11 @@ To reproduce:
 # 3. Save and run:
 python scripts/evaluate.py
 ```
+
+---
+
+## Development Tools
+
+This was built and refined with the assistance of:
+- **Antigravity**
+- **Claude Model**
